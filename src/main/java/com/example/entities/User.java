@@ -1,18 +1,21 @@
 package com.example.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
-@Entity(name = "users")
+@Entity
+@Table(name = "users")
 public class User extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
     @Size(min = 4, max = 30)
     @Column(nullable = false)
-
     private String username;
 
     @Size(min = 6, max = 50)
@@ -43,22 +46,24 @@ public class User extends BaseEntity {
     @ManyToMany(targetEntity = User.class, mappedBy = "username")
     private Set<User> friends;
 
-//    @Transient
-//    private String fullName = this.firstName + " " + this.lastName;
+    @Transient
+    private String fullName;
+
 
 
     public User() {
     }
 
-    public User(String username, String password, String email, int age, boolean isDeleted, String firstName, String lastName) {
+    public User(String username, String password, String email, int age, String firstName, String lastName) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.age = age;
-        this.isDeleted = isDeleted;
+        this.isDeleted = false;
         this.firstName = firstName;
         this.lastName = lastName;
         this.registeredOn = LocalDateTime.now();
+        this.friends = new HashSet<>();
     }
 
     public String getUsername() {
@@ -139,5 +144,13 @@ public class User extends BaseEntity {
 
     public void setFriends(Set<User> friends) {
         this.friends = friends;
+    }
+
+    public String getFullName() {
+        return this.getFirstName() + " " + this.getLastName();
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }
